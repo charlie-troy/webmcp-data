@@ -72,7 +72,7 @@ export const useSheet = create<SheetState>((set, get) => {
     displayValue: (cellId) => {
       const raw = get().cells[cellId];
       if (raw == null) return "";
-      return evaluateCell(raw, get().cells);
+      return evaluateCell(raw, get().cells, new Set(), 0, cellId);
     },
 
     setCells: (entries, source = "human") => {

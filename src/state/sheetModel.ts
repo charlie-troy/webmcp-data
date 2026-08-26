@@ -68,6 +68,7 @@ export function evaluateCell(
   cells: CellMap,
   visiting: Set<string> = new Set(),
   depth = 0,
+  currentId?: string,
 ): string {
   if (!raw.startsWith("=")) return raw;
   if (depth > 20) return "#CYCLE";
@@ -79,8 +80,15 @@ export function evaluateCell(
     /\b(SUM|AVG|MIN|MAX|COUNT)\s*\(\s*([A-H]\d+)\s*:\s*([A-H]\d+)\s*\)/gi,
     (_match, fn: string, a: string, b: string) => {
       const ids = expandRange(`${a}:${b}`);
+      // A range that includes the cell currently being computed is circular.
+      if (currentId && ids.includes(currentId)) return "#CYCLE";
       const nums = ids
-        .map((id) => evaluateCell(cells[id] ?? "", cells, new Set(visiting), depth + 1))
+        .map((id) => {
+          if (visiting.has(id)) return ""; // already in the evaluation chain — circular
+          const next = new Set(visiting);
+          next.add(id);
+          return evaluateCell(cells[id] ?? "", cells, next, depth + 1, id);
+        })
         .filter(isNumeric)
         .map(Number);
       switch (fn.toUpperCase()) {
@@ -105,9 +113,12 @@ export function evaluateCell(
     if (visiting.has(id)) return "#CYCLE";
     const next = new Set(visiting);
     next.add(id);
-    const value = evaluateCell(cells[id] ?? "", cells, next, depth + 1);
+    const value = evaluateCell(cells[id] ?? "", cells, next, depth + 1, id);
     return isNumeric(value) ? `(${Number(value)})` : "0";
   });
+
+  // Circularity surfaced by the steps above wins over arithmetic checks.
+  if (expr.includes("#CYCLE")) return "#CYCLE";
 
   // Only safe arithmetic may remain.
   if (!/^[\d\s+\-*/().]+$/.test(expr)) return "#ERROR";
@@ -125,7 +136,7 @@ export function rangeStats(range: string, cells: CellMap): RangeStats | null {
   const ids = expandRange(range);
   if (ids.length === 0) return null;
   const nums = ids
-    .map((id) => evaluateCell(cells[id] ?? "", cells))
+    .map((id) => evaluateCell(cells[id] ?? "", cells, new Set(), 0, id))
     .filter(isNumeric)
     .map(Number);
   const sum = nums.reduce((x, y) => x + y, 0);

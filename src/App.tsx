@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { SheetGrid } from "./components/SheetGrid";
 import { ChartPanel } from "./components/ChartPanel";
 import { ActivityPanel } from "./components/ActivityPanel";
 import { initWebMCP, getWebMCPStatus } from "./webmcp/modelContext";
+import { useWebMCPStatus } from "./webmcp/statusStore";
 import { registerAllTools } from "./webmcp/tools";
 import { useSheet } from "./state/store";
 
 function McpBadge() {
-  const [mode, setMode] = useState("checking");
-  useEffect(() => {
-    setMode(getWebMCPStatus().mode);
-  }, []);
+  const mode = useWebMCPStatus((s) => s.mode);
   return (
     <div className={`mcp-badge ${mode}`} role="status">
       {mode === "native" && "● WebMCP native"}
