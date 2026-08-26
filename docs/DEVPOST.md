@@ -35,7 +35,7 @@ Vite + React + TypeScript · Zustand (state) · safe formula evaluator (SUM/AVG/
 
 ## Links
 - **GitHub:** https://github.com/charlie-troy/webmcp-data
-- **Live demo:** [DEPLOY_URL_PLACEHOLDER]
+- **Live demo:** https://webmcp-data.vercel.app
 - **Video:** [YOUTUBE_URL_PLACEHOLDER] (script: `docs/VIDEO_SCRIPT.md`)
 
 ## Team
