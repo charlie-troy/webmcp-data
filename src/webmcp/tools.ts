@@ -84,9 +84,10 @@ export async function registerAllTools(): Promise<number> {
       execute: ({ cell, formula }: { cell: string; formula: string }) => {
         useSheet.getState().setCells({ [cell.toUpperCase()]: formula }, "agent");
         const value = useSheet.getState().displayValue(cell.toUpperCase());
+        const valid = value !== "#ERROR" && value !== "#CYCLE";
         return {
           summary: `${cell.toUpperCase()} = ${formula} → ${value}${value === "#ERROR" || value === "#CYCLE" ? " (check the formula)" : ""}.`,
-          ok: true,
+          ok: valid,
           computed_value: value,
         };
       },

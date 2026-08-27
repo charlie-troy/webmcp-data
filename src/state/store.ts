@@ -52,9 +52,12 @@ interface SheetState {
 export const useSheet = create<SheetState>((set, get) => {
   function mutate(source: Source, label: string, fn: (draft: Snapshot) => void) {
     set((s) => {
-      const before: Snapshot = { cells: { ...s.cells }, chart: s.chart };
-      const draft: Snapshot = { cells: { ...s.cells }, chart: s.chart };
+      const before: Snapshot = structuredClone({ cells: s.cells, chart: s.chart });
+      const draft: Snapshot = structuredClone({ cells: s.cells, chart: s.chart });
       fn(draft);
+      // A failed or idempotent write should not create a misleading undo
+      // point. The next undo must restore the last real agent change.
+      if (JSON.stringify(before) === JSON.stringify(draft)) return s;
       return {
         cells: draft.cells,
         chart: draft.chart,
@@ -77,18 +80,26 @@ export const useSheet = create<SheetState>((set, get) => {
 
     setCells: (entries, source = "human") => {
       let count = 0;
+      const changedIds: string[] = [];
       mutate(source, `set_cells(${Object.keys(entries).join(", ")})`, (draft) => {
         for (const [id, value] of Object.entries(entries)) {
           if (!isValidCellId(id)) continue;
-          if (value === "") delete draft.cells[id];
-          else draft.cells[id] = value;
-          count++;
+          if (value === "") {
+            if (id in draft.cells) {
+              delete draft.cells[id];
+              changedIds.push(id);
+            }
+          } else if (draft.cells[id] !== value) {
+            draft.cells[id] = value;
+            changedIds.push(id);
+          }
         }
+        count = changedIds.length;
       });
       if (source === "agent" && count > 0) {
         const touched = { ...get().agentTouched };
         const now = Date.now();
-        for (const id of Object.keys(entries)) touched[id] = now;
+        for (const id of changedIds) touched[id] = now;
         set({ agentTouched: touched });
       }
       return count;

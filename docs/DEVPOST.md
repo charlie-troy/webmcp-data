@@ -18,6 +18,13 @@ Spreadsheets are the web's most stateful interface. A scraping agent guessing at
 
 **What became possible that wasn't before:** `run_what_if` — the agent answers "what if marketing drops to 200?" by recomputing totals *hypothetically* and returning the new numbers, leaving the sheet untouched until the human decides.
 
+## Judging fit
+
+- **WebMCP Leverage:** the tools expose evaluated spreadsheet state rather than pixel scraping; `run_what_if` is explicitly read-only, while writes return computed values and visible cell feedback.
+- **Execution:** the seeded budget, live chart, formula evaluator, bounded schemas, formula-error reporting, and undo path make the entire demo inspectable in one session.
+- **Potential Impact:** people can ask questions, test decisions, and commit changes without losing trust in the sheet or needing to translate intent into coordinates.
+- **Creativity & Ambition:** the key interaction is a reversible decision loop — ask, simulate, explain, then apply — turning a spreadsheet into a human-agent workspace.
+
 ## How it works / demo flow
 1. Open the site in ChatGPT's desktop browser (or Chrome with the WebMCP flag).
 2. *"What's my leftover each month?"* → `get_range_stats` → **B16 = 2,150**.

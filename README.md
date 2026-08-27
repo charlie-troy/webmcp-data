@@ -4,6 +4,8 @@ An agent-native spreadsheet built on **WebMCP**, showcasing the standard's *stat
 sharing* pillar: the agent works **in the same live sheet** the human is looking at.
 Every agent write flashes the touched cells teal, `run_what_if` evaluates scenarios
 without modifying anything, and `undo_last_agent_action` keeps the human in charge.
+It is deliberately a decision workspace, not a chatbot bolted onto a grid: the agent
+can inspect, simulate, explain, and then make a visible change only when the human asks.
 
 Built for the [OpenAI WebMCP Challenge](https://openai.com/webmcp-challenge/).
 
