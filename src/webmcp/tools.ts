@@ -103,6 +103,7 @@ export async function registerAllTools(): Promise<number> {
           .describe("Hypothetical cell changes to apply temporarily."),
         stats_range: rangeSchema.describe("Range to summarize after applying the changes, e.g. 'B16' or 'B9:B13'."),
       }),
+      annotations: { readOnlyHint: true, idempotentHint: true },
       execute: ({
         changes,
         stats_range,
