@@ -46,7 +46,7 @@ Vite + React + TypeScript · Zustand (state) · safe formula evaluator (SUM/AVG/
 - **Video:** [YOUTUBE_URL_PLACEHOLDER] (script: `docs/VIDEO_SCRIPT.md`)
 
 ## Team
-[Your name] — solo
+Charlie Troy — solo
 
 ## Tags
 webmcp, ai-agents, spreadsheet, data, what-if-analysis, productivity
