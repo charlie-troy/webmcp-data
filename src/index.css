@@ -12,9 +12,15 @@
   --amber: #f6ad55;
   --red: #fc8181;
 
-  font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
   font-size: 14px;
   color-scheme: dark;
+
+  /* Motion tokens: custom easings + snappy durations */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-fast: 160ms;
+  --dur-med: 240ms;
 }
 
 * {
@@ -189,7 +195,7 @@ body {
   font-size: 12px;
 }
 td.agent-flash {
-  animation: flash 1.6s ease-out;
+  animation: flash 1.2s var(--ease-out);
 }
 @keyframes flash {
   0% {
@@ -272,11 +278,29 @@ td.agent-flash {
   overflow: hidden;
 }
 .bar {
+  width: 100%;
   height: 100%;
   background: linear-gradient(90deg, #2c9d94, var(--accent));
   border-radius: 4px;
-  transition: width 0.5s ease-out;
+  transform-origin: left center;
+  transition: transform 300ms var(--ease-out);
+  animation: bar-in 320ms var(--ease-out) backwards;
 }
+@keyframes bar-in {
+  from {
+    transform: scaleX(0);
+  }
+}
+.chart-body .bar-row:nth-child(1) .bar { animation-delay: 40ms; }
+.chart-body .bar-row:nth-child(2) .bar { animation-delay: 80ms; }
+.chart-body .bar-row:nth-child(3) .bar { animation-delay: 120ms; }
+.chart-body .bar-row:nth-child(4) .bar { animation-delay: 160ms; }
+.chart-body .bar-row:nth-child(5) .bar { animation-delay: 200ms; }
+.chart-body .bar-row:nth-child(6) .bar { animation-delay: 240ms; }
+.chart-body .bar-row:nth-child(7) .bar { animation-delay: 280ms; }
+.chart-body .bar-row:nth-child(8) .bar { animation-delay: 320ms; }
+.chart-body .bar-row:nth-child(9) .bar { animation-delay: 360ms; }
+.chart-body .bar-row:nth-child(10) .bar { animation-delay: 400ms; }
 .bar-value {
   font-size: 11px;
   text-align: right;
@@ -289,9 +313,13 @@ td.agent-flash {
   border: none;
   color: var(--text-dim);
   cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-out), color var(--dur-fast) ease;
 }
 .clear-btn:hover {
   color: var(--red);
+}
+.clear-btn:active {
+  transform: scale(0.9);
 }
 .activity-list {
   overflow-y: auto;
@@ -306,15 +334,15 @@ td.agent-flash {
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 7px 9px;
-  animation: pop-in 0.18s ease-out;
+  animation: pop-in var(--dur-fast) var(--ease-out);
 }
 @keyframes pop-in {
   from {
-    transform: scale(0.96);
+    transform: scale(0.96) translateY(4px);
     opacity: 0;
   }
   to {
-    transform: scale(1);
+    transform: scale(1) translateY(0);
     opacity: 1;
   }
 }
@@ -353,4 +381,16 @@ td.agent-flash {
 }
 .activity-entry.error .entry-result {
   color: var(--red);
+}
+
+/* Respect users who prefer reduced motion: keep color fades, drop movement. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

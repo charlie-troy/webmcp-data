@@ -32,7 +32,7 @@ export function ChartPanel() {
             <div className="bar-track">
               <div
                 className="bar"
-                style={{ width: `${(Math.abs(p.value) / max) * 100}%` }}
+                style={{ transform: `scaleX(${Math.min(1, Math.abs(p.value) / max)})` }}
                 title={`${p.id}: ${p.value}`}
               />
             </div>
